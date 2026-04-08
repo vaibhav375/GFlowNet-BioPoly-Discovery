@@ -613,6 +613,6 @@ python run_ablation.py
 
 **Made with ♻️ for a sustainable future**
 
-[⭐ Star this repo](https://github.com/yourusername/GFlowNet-BioPoly-Discovery) | [🐛 Report Bug](https://github.com/yourusername/GFlowNet-BioPoly-Discovery/issues) | [💡 Request Feature](https://github.com/yourusername/GFlowNet-BioPoly-Discovery/issues)
+[⭐ Star this repo](https://github.com/vaibhav375/GFlowNet-BioPoly-Discovery) | [🐛 Report Bug](https://github.com/yourusername/GFlowNet-BioPoly-Discovery/issues) | [💡 Request Feature](https://github.com/yourusername/GFlowNet-BioPoly-Discovery/issues)
 
 </div>

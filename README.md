@@ -44,7 +44,7 @@ Discover sustainable, biodegradable alternatives to conventional plastics using 
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/GFlowNet-BioPoly-Discovery.git
+git clone https://github.com/vaibhav375/GFlowNet-BioPoly-Discovery.git
 cd GFlowNet-BioPoly-Discovery
 
 # Create virtual environment

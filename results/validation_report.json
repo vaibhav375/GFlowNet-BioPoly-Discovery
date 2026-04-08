@@ -1,0 +1,90 @@
+{
+  "grade": "A",
+  "pass_rate": "13/13",
+  "bio_mae_biodeg": 0.0479,
+  "bio_mae_nonbiodeg": 0.047,
+  "avg_reward_biodeg": 1.0047,
+  "avg_reward_nonbiodeg": 0.0303,
+  "separation_ratio": 33.19,
+  "issues": [],
+  "details": {
+    "L-Lactic acid (PLA)": {
+      "s_bio": 0.9041,
+      "s_mech": 0.51,
+      "s_syn": 0.8478,
+      "reward": 1.1209
+    },
+    "Lactide (PLA dimer)": {
+      "s_bio": 0.7925,
+      "s_mech": 0.6417,
+      "s_syn": 0.7606,
+      "reward": 1.188
+    },
+    "\u03b5-Caprolactone (PCL)": {
+      "s_bio": 0.747,
+      "s_mech": 0.5467,
+      "s_syn": 0.8511,
+      "reward": 0.8414
+    },
+    "Succinic acid (PBS)": {
+      "s_bio": 0.8401,
+      "s_mech": 0.6287,
+      "s_syn": 0.9022,
+      "reward": 1.1734
+    },
+    "3-HB acid (PHB)": {
+      "s_bio": 0.8891,
+      "s_mech": 0.5241,
+      "s_syn": 0.8361,
+      "reward": 1.1198
+    },
+    "Glycolic acid (PGA)": {
+      "s_bio": 0.9662,
+      "s_mech": 0.51,
+      "s_syn": 0.9106,
+      "reward": 1.1043
+    },
+    "PBS dimer": {
+      "s_bio": 0.7463,
+      "s_mech": 0.3981,
+      "s_syn": 0.8522,
+      "reward": 0.7244
+    },
+    "Glucose (cellulose)": {
+      "s_bio": 0.9043,
+      "s_mech": 0.4452,
+      "s_syn": 0.5622,
+      "reward": 0.7654
+    },
+    "Decane (PE model)": {
+      "s_bio": 0.1095,
+      "s_mech": 0.3644,
+      "s_syn": 0.9544,
+      "reward": 0.015
+    },
+    "PS trimer": {
+      "s_bio": 0.0896,
+      "s_mech": 0.595,
+      "s_syn": 0.6817,
+      "reward": 0.0398
+    },
+    "PET repeat unit": {
+      "s_bio": 0.0894,
+      "s_mech": 0.6105,
+      "s_syn": 0.8167,
+      "reward": 0.0727
+    },
+    "PVC oligomer": {
+      "s_bio": 0.0939,
+      "s_mech": 0.4252,
+      "s_syn": 0.8122,
+      "reward": 0.0007
+    },
+    "PP oligomer": {
+      "s_bio": 0.1324,
+      "s_mech": 0.3665,
+      "s_syn": 0.9278,
+      "reward": 0.0231
+    }
+  }
+}

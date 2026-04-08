@@ -1,0 +1,194 @@
+═══════════════════════════════════════════════════════════════════════════════
+REPRODUCIBILITY DOCUMENTATION INDEX
+GFlowNet for Biodegradable Polymer Discovery
+═══════════════════════════════════════════════════════════════════════════════
+
+This folder contains complete documentation for reproducing all results reported
+in the research paper.
+
+═══ QUICK NAVIGATION ═══
+
+START HERE:
+  → README.md                    Overview and quick start guide
+
+DETAILED SPECIFICATIONS:
+  → hyperparameters.txt          All hyperparameters (8.7 KB)
+  → random_seeds.txt             All random seeds (5.5 KB)
+  → hardware_specs.txt           Hardware specifications (6.9 KB)
+  → evaluation_guide.txt         Step-by-step evaluation (13 KB)
+
+REFERENCE:
+  → CHANGES_SUMMARY.md           Summary of all changes made (10 KB)
+  → INDEX.txt                    This file
+
+
+═══ FILE DESCRIPTIONS ═══
+
+1. README.md (4.9 KB)
+   - Overview of reproducibility documentation
+   - Quick start guide (5 steps)
+   - Expected results summary
+   - Hardware requirements
+   - Cost estimates (US, India, EU, UK, China)
+   - Carbon footprint by region
+   - Verification checklist
+   - Troubleshooting tips
+   - Citation information
+
+2. hyperparameters.txt (8.7 KB)
+   - GFlowNet policy network (architecture, training, losses)
+   - Surrogate models (S_bio, S_mech, S_syn)
+   - Reward function (28 bonuses + 13 penalties)
+   - Active learning (12 rounds, UCB, MD validation)
+   - Data preprocessing (8,922 structures, features)
+   - Advanced techniques (LS-GFN, genetic, Thompson)
+   - Computational environment
+   - Carbon accounting
+
+3. random_seeds.txt (5.5 KB)
+   - Master seed: 42
+   - Component-specific seeds (data, surrogates, GFlowNet, etc.)
+   - Python implementation code
+   - Seed usage by script
+   - Verification procedures
+   - Notes on determinism
+
+4. hardware_specs.txt (6.9 KB)
+   - Primary system: Apple M-series (8-core ARM, 16GB RAM)
+   - Performance characteristics (power, temperature)
+   - Minimum requirements (4-core, 8GB RAM, no GPU)
+   - Expected performance on different hardware
+   - Carbon intensity by region (US, India, EU, China, Brazil)
+   - Cost estimates by region
+   - Monitoring tools
+
+5. evaluation_guide.txt (13 KB)
+   - Prerequisites and setup
+   - 6 evaluation scripts with commands:
+     * validate_pipeline.py (Grade A validation)
+     * discover.py (generate molecules)
+     * evaluation/metrics.py (diversity metrics)
+     * paper/generate_figures.py (all figures)
+     * evaluation/green_ai_metrics.py (carbon report)
+     * run_ablation.py (ablation study)
+   - Expected outputs for each script
+   - Expected runtimes and memory usage
+   - File outputs structure
+   - Troubleshooting guide
+   - Verification checklist
+
+6. CHANGES_SUMMARY.md (10 KB)
+   - Summary of all changes made to paper
+   - Paper updates (A.3, A.4, A.5)
+   - New files created (descriptions)
+   - How to use these files
+   - Next steps (optional)
+
+7. INDEX.txt (this file)
+   - Quick navigation guide
+   - File descriptions
+   - Usage workflows
+
+
+═══ USAGE WORKFLOWS ═══
+
+FOR REVIEWERS:
+  1. Read README.md for overview
+  2. Check hyperparameters.txt for specifications
+  3. Review evaluation_guide.txt for expected outputs
+  4. Verify CHANGES_SUMMARY.md for paper updates
+
+FOR REPRODUCERS:
+  1. Follow README.md quick start
+  2. Set seeds from random_seeds.txt
+  3. Verify hardware meets specs in hardware_specs.txt
+  4. Run evaluation scripts from evaluation_guide.txt
+  5. Compare outputs with expected results
+
+FOR PAPER SUBMISSION:
+  1. Verify all appendix sections reference these files
+  2. Include this folder in supplementary materials
+  3. Mention in paper: "Complete reproducibility documentation 
+     available in reproducibility/ folder"
+
+
+═══ KEY INFORMATION ═══
+
+EXPECTED RESULTS:
+  - Validation: Grade A (13/13 tests passed)
+  - Separation ratio: 33.19×
+  - Validity: 100%
+  - Novelty: 99.96%
+  - Diversity: 0.805 (Tanimoto)
+  - Top reward: 1.336
+  - Runtime: 20-24 hours
+  - CO₂ (US): 0.643 kg
+  - CO₂ (India): 1.252 kg
+
+HARDWARE REQUIREMENTS:
+  - Minimum: 4-core CPU, 8 GB RAM, 10 GB storage
+  - Recommended: 8-core CPU, 16 GB RAM, 20 GB SSD
+  - No GPU required
+
+COST ESTIMATES (for 1.527 kWh):
+  - United States: $0.20 USD
+  - India: ₹12.20 INR
+  - European Union: €0.38 EUR
+  - United Kingdom: £0.43 GBP
+  - China: ¥0.92 CNY
+
+CARBON FOOTPRINT (for 1.527 kWh):
+  - US grid (0.42 kg/kWh): 0.643 kg CO₂
+  - India grid (0.82 kg/kWh): 1.252 kg CO₂
+  - EU grid (0.30 kg/kWh): 0.458 kg CO₂
+  - China grid (0.55 kg/kWh): 0.840 kg CO₂
+
+
+═══ PAPER REFERENCES ═══
+
+These files are referenced in the paper appendix:
+
+Appendix A.3 (Computational Resource Requirements):
+  - Cost: ₹12.20 INR at Indian rates (₹8.00/kWh)
+
+Appendix A.4 (Software and Data Availability):
+  - Code: GFlowNet-BioPoly-Discovery/
+  - Models: checkpoints/
+  - Results: results/discovery/
+  - Data: data/
+
+Appendix A.5 (Reproducibility Checklist):
+  - Hyperparameters: reproducibility/hyperparameters.txt
+  - Random seeds: reproducibility/random_seeds.txt
+  - Hardware specs: reproducibility/hardware_specs.txt
+  - Evaluation guide: reproducibility/evaluation_guide.txt
+
+
+═══ TOTAL DOCUMENTATION SIZE ═══
+
+File                      Size
+─────────────────────────────────
+README.md                 4.9 KB
+hyperparameters.txt       8.7 KB
+random_seeds.txt          5.5 KB
+hardware_specs.txt        6.9 KB
+evaluation_guide.txt      13 KB
+CHANGES_SUMMARY.md        10 KB
+INDEX.txt                 ~5 KB
+─────────────────────────────────
+TOTAL                     ~54 KB
+
+All files are plain text (easy to read, version control, and share).
+
+
+═══ CONTACT ═══
+
+For questions or issues:
+  - Email: handoovaibhav123@gmail.com
+  - Check evaluation_guide.txt for troubleshooting
+  - Review paper appendix for detailed specifications
+
+
+═══════════════════════════════════════════════════════════════════════════════
+END OF INDEX
+═══════════════════════════════════════════════════════════════════════════════

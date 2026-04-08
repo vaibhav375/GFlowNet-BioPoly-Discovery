@@ -1,0 +1,70 @@
+{
+  "project_name": "GFlowNet_BioPoly_Discovery",
+  "total_emissions_kg_co2": 0.64268242083054,
+  "energy_consumed_kwh": 1.5301962400727143,
+  "training_time_hours": 21.401346015002993,
+  "water_consumed_liters": 2.7543532321308857,
+  "water_intensity_region": "us_average",
+  "embodied_carbon_share_kg": 0.08560538406001197,
+  "total_lifecycle_carbon_kg": 0.7282878048905519,
+  "total_flops": 1244903424000.0,
+  "flops_per_molecule": 269226519.0311419,
+  "gpu_hours_per_candidate": 0.00462831877487089,
+  "molecules_per_kwh": 3021.8346372229157,
+  "total_parameters": 1620968,
+  "parameters_per_valid_molecule": 350.5553633217993,
+  "model_size_mb": 6.483872,
+  "total_molecules_generated": 4624,
+  "valid_molecules_generated": 4624,
+  "unique_molecules_generated": 4624,
+  "emissions_per_molecule": 0.00013898841280937283,
+  "carbon_efficiency": 7194.844374340276,
+  "total_epochs": 0,
+  "total_steps": 8000,
+  "hardware": "cpu",
+  "gpu_model": "cpu",
+  "region": "us_average",
+  "renewable_energy_pct": 0.0,
+  "mixed_precision": false,
+  "gradient_checkpointing": false,
+  "early_stopping_used": true,
+  "carbon_budget_used": true,
+  "efficient_architecture": true,
+  "transfer_learning": false,
+  "data_efficient": true,
+  "time_saved_pct": 0.0,
+  "energy_saved_pct": 0.0,
+  "potential_plastic_replaced_tonnes": 4000.0000000000005,
+  "potential_co2_avoided_tonnes": 24000.000000000004,
+  "potential_ocean_plastic_reduction_kg": 110000.00000000001,
+  "biodeg_improvement_factor": 918.3673469387754,
+  "baseline_emissions": {
+    "JT-VAE": 2.5,
+    "GA": 1.8,
+    "PPO": 1.5,
+    "Random": 0.05
+  },
+  "baseline_comparison": {
+    "JT-VAE": {
+      "carbon_reduction_pct": 74.29270316677841,
+      "efficiency_ratio": 17.98711093585069,
+      "energy_reduction_pct": 81.56390072201549
+    },
+    "Genetic_Algorithm": {
+      "carbon_reduction_pct": 64.29542106497,
+      "efficiency_ratio": 12.940367579748697,
+      "energy_reduction_pct": 74.91481573651288
+    },
+    "PPO_RL": {
+      "carbon_reduction_pct": 57.154505277964,
+      "efficiency_ratio": 10.78687312494794,
+      "energy_reduction_pct": 69.39607519854572
+    },
+    "Random_Search": {
+      "carbon_reduction_pct": -1185.36484166108,
+      "efficiency_ratio": 35.97422187170138,
+      "energy_reduction_pct": -920.1308267151429
+    }
+  },
+  "sustainability_score": 88.39209806392425
+}

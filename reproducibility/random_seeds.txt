@@ -1,0 +1,178 @@
+═══════════════════════════════════════════════════════════════════════════════
+RANDOM SEEDS FOR REPRODUCIBILITY
+GFlowNet for Biodegradable Polymer Discovery
+═══════════════════════════════════════════════════════════════════════════════
+
+All experiments use fixed random seeds to ensure reproducibility.
+Set these seeds at the beginning of each script before any stochastic operations.
+
+═══ MASTER SEED ═══
+MASTER_SEED = 42
+
+═══ COMPONENT-SPECIFIC SEEDS ═══
+
+1. Data Preprocessing & Splitting:
+   - SEED_DATA_SPLIT = 42
+   - SEED_SMILES_AUGMENTATION = 123
+   - SEED_GRAPH_CONSTRUCTION = 456
+
+2. Surrogate Model Training:
+   - SEED_SURROGATE_BIO = 2023
+   - SEED_SURROGATE_MECH = 2024
+   - SEED_SURROGATE_SYN = 2025
+   - SEED_WEIGHT_INIT = 789
+
+3. GFlowNet Training:
+   - SEED_GFLOWNET_INIT = 1337
+   - SEED_POLICY_NETWORK = 9876
+   - SEED_TRAJECTORY_SAMPLING = 5432
+   - SEED_REPLAY_BUFFER = 8765
+
+4. Active Learning:
+   - SEED_AL_ROUND_BASE = 3000
+   - SEED_AL_ROUND_1 = 3001
+   - SEED_AL_ROUND_2 = 3002
+   - SEED_AL_ROUND_3 = 3003
+   - SEED_AL_ROUND_4 = 3004
+   - SEED_AL_ROUND_5 = 3005
+   - SEED_AL_ROUND_6 = 3006
+   - SEED_AL_ROUND_7 = 3007
+   - SEED_AL_ROUND_8 = 3008
+   - SEED_AL_ROUND_9 = 3009
+   - SEED_AL_ROUND_10 = 3010
+   - SEED_AL_ROUND_11 = 3011
+   - SEED_AL_ROUND_12 = 3012
+
+5. Molecular Dynamics Simulations:
+   - SEED_MD_BASE = 4000
+   - SEED_MD_VELOCITY_INIT = 4001
+
+6. Genetic Refinement:
+   - SEED_GENETIC_INIT = 5000
+   - SEED_MUTATION = 5001
+   - SEED_CROSSOVER = 5002
+   - SEED_SELECTION = 5003
+
+7. Multi-Temperature Generation:
+   - SEED_TEMP_0_3 = 6001
+   - SEED_TEMP_1_0 = 6002
+   - SEED_TEMP_2_0 = 6003
+
+8. Thompson Sampling:
+   - SEED_BOOTSTRAP_HEAD_1 = 7001
+   - SEED_BOOTSTRAP_HEAD_2 = 7002
+   - SEED_BOOTSTRAP_HEAD_3 = 7003
+   - SEED_BOOTSTRAP_HEAD_4 = 7004
+   - SEED_BOOTSTRAP_HEAD_5 = 7005
+
+9. Evaluation & Metrics:
+   - SEED_EVALUATION = 8000
+   - SEED_PARETO_EXTRACTION = 8001
+   - SEED_DIVERSITY_SAMPLING = 8002
+
+
+═══ PYTHON IMPLEMENTATION ═══
+
+To set all seeds in Python, use the following code at the start of your script:
+
+```python
+import random
+import numpy as np
+import torch
+
+def set_all_seeds(seed=42):
+    """Set all random seeds for reproducibility."""
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    
+    # For PyTorch Geometric
+    import torch_geometric
+    torch_geometric.seed_everything(seed)
+
+# Set master seed
+set_all_seeds(42)
+```
+
+
+═══ SEED USAGE BY SCRIPT ═══
+
+run_pipeline.py:
+  - Uses MASTER_SEED = 42 for all operations
+  - Sets seed at beginning: set_all_seeds(42)
+
+train_surrogates.py:
+  - S_bio: set_all_seeds(2023)
+  - S_mech: set_all_seeds(2024)
+  - S_syn: No seed needed (rule-based)
+
+models/gflownet.py:
+  - Initialization: set_all_seeds(1337)
+  - Trajectory sampling: Uses SEED_TRAJECTORY_SAMPLING = 5432
+
+training/active_learning.py:
+  - Round i: set_all_seeds(3000 + i)
+
+models/genetic_refinement.py:
+  - Initialization: set_all_seeds(5000)
+  - Each generation: seed = 5000 + generation_number
+
+paper/generate_figures.py:
+  - Visualization: set_all_seeds(8000)
+
+
+═══ VERIFICATION ═══
+
+To verify reproducibility:
+1. Run the pipeline twice with the same seeds
+2. Compare outputs:
+   - Generated molecule SMILES should be identical
+   - Reward values should match to 6 decimal places
+   - Model checkpoints should have identical weights
+   - Evaluation metrics should be identical
+
+Expected variations:
+  - Floating-point precision differences across hardware (< 1e-6)
+  - Minor timing differences in wall-clock time
+  - File system timestamps
+
+No expected variations in:
+  - Generated molecular structures
+  - Model predictions
+  - Training/validation losses
+  - Final metrics
+
+
+═══ NOTES ═══
+
+1. PyTorch Determinism:
+   - torch.backends.cudnn.deterministic = True ensures deterministic operations
+   - Some operations may be slower with determinism enabled
+   - CPU-only execution is naturally more deterministic than GPU
+
+2. RDKit Determinism:
+   - RDKit operations are deterministic by default
+   - SMILES canonicalization is deterministic
+   - Molecular descriptor calculations are deterministic
+
+3. NumPy Determinism:
+   - NumPy random operations are deterministic with fixed seed
+   - Use np.random.seed() before any random operations
+
+4. Python Random Module:
+   - Use random.seed() for Python's built-in random module
+   - Affects random.choice(), random.shuffle(), etc.
+
+5. Multi-threading:
+   - Set OMP_NUM_THREADS=1 for complete determinism
+   - Set MKL_NUM_THREADS=1 for Intel MKL
+   - Set NUMEXPR_NUM_THREADS=1 for NumExpr
+
+
+═══════════════════════════════════════════════════════════════════════════════
+END OF RANDOM SEEDS SPECIFICATION
+═══════════════════════════════════════════════════════════════════════════════

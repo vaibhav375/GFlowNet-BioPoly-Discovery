@@ -1,0 +1,281 @@
+═══════════════════════════════════════════════════════════════════════════════
+COMPLETE HYPERPARAMETER SPECIFICATIONS
+GFlowNet for Biodegradable Polymer Discovery
+═══════════════════════════════════════════════════════════════════════════════
+
+═══ 1. GFLOWNET POLICY NETWORK ═══
+
+Architecture:
+  - Network Type: Graph Isomorphism Network with Edge features (GINE)
+  - Number of Layers: 5
+  - Hidden Dimension: 256
+  - Total Parameters: 1,620,968
+  - Activation Function: ReLU
+  - Dropout Rate: 0.2
+  - Batch Normalization: Yes (after each layer)
+
+Training:
+  - Optimizer: AdamW
+  - Learning Rate: 5e-4
+  - Weight Decay: 1e-4
+  - Batch Size: 16
+  - Total Training Steps: 8,000
+  - Gradient Clipping: 1.0 (max norm)
+  - EMA Decay: 0.999
+  - Warmup Steps: 100 (linear warmup)
+  - LR Schedule: Cosine annealing after warmup
+
+Loss Functions:
+  - Trajectory Balance (TB) Weight: 0.5
+  - Sub-Trajectory Balance (SubTB) Weight: 0.5
+  - Entropy Regularization Coefficient: 0.01
+  - RLOO Variance Reduction: Enabled
+
+Exploration:
+  - Initial Temperature: 2.0
+  - Final Temperature: 0.5
+  - Temperature Decay: 0.9985 (exponential)
+  - Initial Epsilon (ε-greedy): 0.2
+  - Final Epsilon: 0.02
+  - Epsilon Decay: Linear over 8000 steps
+  - Exploration Bumps: Every 2000 steps (τ *= 1.5 for 100 steps)
+
+Curriculum Learning:
+  - Initial Max Molecule Size: 8 atoms
+  - Intermediate Max Size: 15 atoms (step 2000)
+  - Final Max Size: 25 atoms (step 4000)
+
+Action Space:
+  - Total Actions: 18
+  - Atom Actions: 8 (C, N, O, S, F, Cl, Br, P)
+  - Fragment Actions: 6 (ester, amide, carbonyl, carboxylic, carbonate, vinyl)
+  - Bond Actions: 3 (single, double, triple)
+  - Stop Action: 1
+
+Replay Buffer:
+  - Capacity: 2000 trajectories
+  - Prioritization: Reward-based (α = 0.6)
+  - Replay Probability: 0.3
+
+Thompson Sampling:
+  - Number of Bootstrap Heads: 5
+  - Head Selection: Random per trajectory
+
+
+═══ 2. SURROGATE MODELS ═══
+
+S_bio (Biodegradability Predictor):
+  - Architecture: Message-Passing Neural Network (MPNN)
+  - Parameters: 773,761
+  - Hidden Dimension: 128
+  - Number of Message-Passing Layers: 4
+  - Pooling: Mean + Max concatenation
+  - MLP Layers: 3 (128 → 64 → 1)
+  - Dropout: 0.2
+  - Optimizer: AdamW
+  - Learning Rate: 1e-3
+  - Weight Decay: 1e-4
+  - Batch Size: 32
+  - Max Epochs: 300
+  - Early Stopping Patience: 20
+  - LR Schedule: Cosine annealing
+  - Label Smoothing: 0.05
+  - R-Dropout α_KL: 0.1
+  - SWA Start Epoch: 240 (last 20%)
+  - Best Validation Loss: 0.00414
+  - Best Epoch: 69
+
+S_mech (Mechanical Properties Predictor):
+  - Architecture: Attentive MPNN
+  - Parameters: 841,363
+  - Hidden Dimension: 128
+  - Number of Message-Passing Layers: 4
+  - Attention Heads: 4
+  - Pooling: Attention-weighted + Mean + Max
+  - MLP Layers: 3 (128 → 64 → 3)
+  - Output Targets: 3 (tensile strength, Tg, flexibility)
+  - Dropout: 0.2
+  - Optimizer: AdamW
+  - Learning Rate: 1e-3
+  - Weight Decay: 1e-4
+  - Batch Size: 32
+  - Max Epochs: 300
+  - Early Stopping Patience: 20
+  - LR Schedule: Cosine annealing
+  - Label Smoothing: 0.05
+  - R-Dropout α_KL: 0.1
+  - SWA Start Epoch: 240
+  - Best Validation Loss: 0.00931
+  - Best Epoch: 73
+
+S_syn (Synthesizability Scorer):
+  - Method: Rule-based SA Score
+  - No trainable parameters
+  - Based on fragment contributions from known organic chemistry
+
+
+═══ 3. REWARD FUNCTION ═══
+
+Base Reward:
+  - R_base = S_bio^0.50 × S_mech^0.35 × S_syn^0.15
+  - Biodegradability Exponent: 0.50 (adaptive: increases to 0.55 during training)
+  - Mechanical Exponent: 0.35
+  - Synthesizability Exponent: 0.15
+
+Hard Thresholds:
+  - S_bio Threshold: 0.6 (penalty if below)
+  - S_mech Threshold: 0.5 (penalty if below)
+  - S_syn Threshold: 0.5 (penalty if below)
+  - Penalty Function: max(0.2, score/threshold)
+
+Chemistry-Aware Shaping (Φ):
+  Positive Bonuses (28 components):
+    - Ester bonds (-COO-): +0.15 per match (cap: 0.70)
+    - Amide bonds (-CONH-): +0.10 per match (cap: 0.50)
+    - Hydroxyl groups (-OH): +0.05 per match (cap: 0.25)
+    - Carbonyl groups (C=O): +0.12 per match (cap: 0.25)
+    - Ether linkages (C-O-C): +0.08 per match (cap: 0.15)
+    - Carbonate groups: +0.12 per match (cap: 0.20)
+    - O:C ratio > 0.3: +0.12 × ratio (cap: 0.15)
+    - Lactone rings (5-7 membered): +0.35 (no cap)
+    - Lactam rings: +0.30 (no cap)
+    - Ring presence: +0.15 per ring (cap: 0.30)
+    - Double bonds: +0.06 per bond (cap: 0.15)
+    - Branching (C degree ≥ 3): +0.05 per branch (cap: 0.12)
+    - NH groups: +0.05 per match (cap: 0.10)
+    - Size bonus (≥ 8 atoms): +0.15 progressive
+    [... 14 more positive components]
+
+  Negative Penalties (13 components):
+    - Halogen atoms (F, Cl, Br): -0.20 per atom
+    - Exotic atoms (S, P, Si, B): -0.50 per atom
+    - Peroxide bonds (O-O): -0.80 per match
+    - N-O single bonds: -0.70 per match
+    - N=O (nitro-like): -0.80 per match
+    - N-N bonds: -0.60 per match
+    - N-N-N chains: -0.50 extra
+    - Aromatic ester: -0.25 per match
+    - High aromatic fraction (>40%): -0.20
+    - No carbonyl for 10+ atoms: -0.60
+    - Small molecules (< 6 atoms): -0.40
+    - Disconnected fragments: -0.20 per extra fragment
+    - Ring strain (3/4-membered): × max(0.3, 1-0.25n)
+
+Functional Group Diversity:
+  - FG_div = 1 + 0.05 × min(num_FG_types, 8)
+
+Hydrogen Bond Balance:
+  - HB_bal = 1 + 0.10 × exp(-|donors/acceptors - 0.5|)
+  - Ideal ratio: 0.4-0.6
+
+
+═══ 4. ACTIVE LEARNING ═══
+
+Configuration:
+  - Number of Rounds: 12
+  - Candidates per Round: 1,000
+  - Top-K Selected: 80
+  - Acquisition Function: Upper Confidence Bound (UCB)
+  - Initial β_UCB: 1.5
+  - Final β_UCB: 0.3
+  - β Decay: Linear over 12 rounds
+  - MC Dropout Passes: 10
+  - Dropout Rate (inference): 0.2
+
+Molecular Dynamics Validation:
+  - Force Field: Universal Force Field (UFF)
+  - Temperature: 300 K
+  - Simulation Time: 10 ns
+  - Time Step: 1 fs
+  - Ensemble: NVT (constant volume, temperature)
+
+Retraining:
+  - Surrogate Fine-tuning: 50 additional epochs
+  - GFlowNet Fine-tuning: 300 additional steps
+  - Fine-tuning Learning Rate: 3e-4
+
+
+═══ 5. DATA PREPROCESSING ═══
+
+Dataset:
+  - Total Structures: 8,922 unique polymer SMILES
+  - Experimental Entries: 752 (2× upweighted)
+  - Train/Val/Test Split: 6400/800/800
+  - SMILES Augmentation: 5 enumerations per structure
+  - Effective Training Size: 20,840 graphs per epoch
+
+Molecular Graph Features:
+  - Atom Features: 38-dimensional
+    * Atom type (one-hot)
+    * Degree
+    * Formal charge
+    * Number of hydrogens
+    * Aromaticity
+    * Ring membership
+    * Hybridization state
+  - Bond Features: 7-dimensional
+    * Bond type
+    * Is in ring
+    * Is conjugated
+    * Stereo configuration
+
+
+═══ 6. ADVANCED TECHNIQUES ═══
+
+Local Search Refinement (LS-GFN):
+  - Enabled: Yes
+  - Backtrack Probability: 0.3
+  - Max Backtrack Steps: 5
+  - Success Rate: 63.8%
+
+Genetic Refinement:
+  - Generations: 5
+  - Population Size: 50
+  - Mutation Operators: 4 (atom swap, fragment add, atom delete, bond change)
+  - Mutation Rate: 0.3
+  - Crossover: Fragment-exchange
+  - Selection: Tournament (k=3)
+
+Multi-Temperature Generation:
+  - Temperatures: [0.3, 1.0, 2.0]
+  - Samples per Temperature: 333, 333, 334
+  - Total Samples: 1,000 per round
+
+
+═══ 7. COMPUTATIONAL ENVIRONMENT ═══
+
+Hardware:
+  - Processor: Apple M-series (ARM architecture)
+  - CPU Cores: 8 (4 performance + 4 efficiency)
+  - RAM: 16 GB
+  - Storage: SSD
+  - GPU: None (CPU-only execution)
+
+Software:
+  - Python: 3.10.12
+  - PyTorch: 2.0.1
+  - PyTorch Geometric: 2.3.1
+  - RDKit: 2023.03.1
+  - NumPy: 1.24.3
+  - See requirements.txt for complete list
+
+
+═══ 8. CARBON ACCOUNTING ═══
+
+Parameters:
+  - Processor TDP: 30W (Apple M-series)
+  - Utilization Factor: 0.75
+  - PUE (Power Usage Effectiveness): 1.1
+  - Grid Carbon Intensity: 0.42 kg CO₂/kWh (US average)
+  - For India: 0.82 kg CO₂/kWh
+
+Total Emissions:
+  - Operational: 0.643 kg CO₂ (US grid)
+  - Operational: 1.256 kg CO₂ (India grid)
+  - Embodied Hardware: 0.086 kg CO₂
+  - Total Lifecycle: 0.728 kg CO₂ (US) / 1.342 kg CO₂ (India)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+END OF HYPERPARAMETER SPECIFICATIONS
+═══════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BioPolymer Discovery — GFlowNet AI</title>
+  <meta name="description" content="AI-powered discovery of biodegradable polymer alternatives using Generative Flow Networks">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<canvas id="particles-canvas"></canvas>
+<div class="gradient-orb orb-1"></div>
+<div class="gradient-orb orb-2"></div>
+<div class="gradient-orb orb-3"></div>
+
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text">Analyzing molecular structures...</div>
+</div>
+
+<!-- Green AI Modal -->
+<div class="modal-overlay" id="greenModal">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" onclick="closeGreenAI()">✕</button>
+    <h2>🌍 Green AI & Sustainability Measures</h2>
+    <p style="color:var(--text-secondary);margin-bottom:20px;">Every step of our pipeline is designed with environmental responsibility in mind.</p>
+    <div class="green-item"><h4>🔋 Carbon-Budget Training</h4><p>Surrogate models train under a strict carbon budget. Training automatically stops if the budget is exceeded, preventing wasteful computation. Estimated emissions: ~0.643 kg CO₂ (US grid) or ~1.252 kg CO₂ (India grid) per full pipeline run.</p></div>
+    <div class="green-item"><h4>⏰ Early Stopping</h4><p>All neural networks use patience-based early stopping (patience=20 epochs). S_bio stopped at epoch 69 (of 300 max), S_mech at epoch 73 — saving ~75% of potential training compute.</p></div>
+    <div class="green-item"><h4>💧 Water Footprint Tracking</h4><p>Data center cooling requires water. We estimate ~2.75L water per pipeline run and track this alongside carbon emissions in our Green AI report.</p></div>
+    <div class="green-item"><h4>📊 TDP-Based Estimation</h4><p>Instead of requiring hardware power meters, we use processor TDP (Thermal Design Power) ratings to estimate energy consumption — making sustainability tracking accessible to all researchers. Total energy: 1.527 kWh.</p></div>
+    <div class="green-item"><h4>♻️ Biodegradable Focus</h4><p>The entire purpose: replacing plastics that persist for 500+ years with alternatives that biodegrade in months. Each successful polymer candidate prevents decades of microplastic pollution. Top candidate degrades 918× faster than PET.</p></div>
+    <div class="green-item"><h4>🧬 Active Learning Efficiency</h4><p>Instead of generating millions of molecules randomly, our GFlowNet focuses exploration on high-reward chemical space. 4,624 candidates generated with 12 active learning rounds refining the search — 1000× more efficient than brute-force approaches.</p></div>
+    <div class="green-item"><h4>📈 Real Data Prioritization</h4><p>By integrating 752 experimentally validated data points (with 2× weighting) from PolyInfo and PN2S databases, we reduce the need for large synthetic datasets and improve model accuracy with less data — fewer epochs, less compute, better results.</p></div>
+  </div>
+</div>
+
+<!-- Candidate Details Modal -->
+<div class="modal-overlay" id="candidateModal">
+  <div class="modal" style="position:relative; width:800px; max-width:95%">
+    <button class="modal-close" onclick="closeCandidateModal()">✕</button>
+    <h2 id="cand-modal-name">Candidate Name</h2>
+    <div class="target-props" style="margin-top:20px; margin-bottom: 24px;">
+      <div class="prop-item"><div class="prop-label">Glass Transition (Tg)</div><div class="prop-value" id="cand-modal-tg"></div></div>
+      <div class="prop-item"><div class="prop-label">Tensile Strength</div><div class="prop-value" id="cand-modal-tensile"></div></div>
+      <div class="prop-item"><div class="prop-label" style="color:var(--accent-green)">Biodegradation</div><div class="prop-value" id="cand-modal-biodeg" style="color:var(--accent-green)"></div></div>
+      <div class="prop-item"><div class="prop-label">SMILES</div><div class="prop-value" id="cand-modal-smiles" style="font-size:11px;font-family:'JetBrains Mono',monospace;word-break:break-all"></div></div>
+    </div>
+    
+    <div style="display:grid; grid-template-columns: 250px 1fr; gap: 30px;">
+      <div class="result-molecule" style="margin:0; height:180px;"><img id="cand-modal-img" src="" style="max-height:100%; max-width:100%"></div>
+      <div>
+        <h4 style="color:var(--accent-green); margin-bottom: 8px;">Real-World Feasibility</h4>
+        <p id="cand-modal-desc" style="font-size:14px; color:var(--text-secondary); line-height:1.6; margin-bottom: 16px;"></p>
+        <p id="cand-modal-feasibility" style="font-size:14px; color:var(--text-primary); line-height:1.6;"></p>
+        <div id="cand-modal-badges" style="margin-top: 16px; display:flex; gap:8px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo"><span class="nav-logo-icon">♻️</span><span class="nav-logo-text">BioPolymer Discovery</span></a>
+    <div class="nav-links"><a href="#search">Search</a><a href="#pipeline">Pipeline</a><a href="#" onclick="openGreenAI();return false" style="color:var(--accent-green)">🌍 Green AI</a></div>
+    <div class="nav-status"><div class="status-dot"></div><span>Pipeline Active</span></div>
+  </div>
+</nav>
+
+<div class="app-container">
+
+  <!-- Hero -->
+  <section class="hero" id="search">
+    <div class="hero-badge">🧬 Powered by Multi-Objective GFlowNets</div>
+    <h1>Discover <span class="gradient-text">Biodegradable</span><br>Polymer Alternatives</h1>
+    <p>Enter any conventional plastic — by name, abbreviation, or everyday item — and our AI finds sustainable, biodegradable replacements.</p>
+
+    <div class="search-container">
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder='Try "PET", "water bottle", "plastic bag", "styrofoam"...' autocomplete="off">
+        <button class="search-btn" id="search-btn">🔍 Discover</button>
+      </div>
+      <div class="quick-tags">
+        <span class="quick-tag" onclick="quickSearch('PET')">🧴 PET</span>
+        <span class="quick-tag" onclick="quickSearch('PE')">🛍️ PE</span>
+        <span class="quick-tag" onclick="quickSearch('PP')">📦 PP</span>
+        <span class="quick-tag" onclick="quickSearch('PS')">☕ Styrofoam</span>
+        <span class="quick-tag" onclick="quickSearch('PVC')">🔧 PVC</span>
+        <span class="quick-tag" onclick="quickSearch('Nylon')">👕 Nylon</span>
+        <span class="quick-tag" onclick="quickSearch('LDPE')">🛒 LDPE</span>
+        <span class="quick-tag" onclick="quickSearch('HDPE')">🧹 HDPE</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats-bar">
+    <div class="stat-card"><div class="stat-value green" data-count="752">0</div><div class="stat-label">Real Data Points</div></div>
+    <div class="stat-card"><div class="stat-value blue" data-count="8922">0</div><div class="stat-label">Training Molecules</div></div>
+    <div class="stat-card"><div class="stat-value purple" data-count="4624">0</div><div class="stat-label">Candidates Generated</div></div>
+    <div class="stat-card"><div class="stat-value amber" data-count="8">0</div><div class="stat-label">Plastics Covered</div></div>
+  </div>
+
+  <!-- Target -->
+  <section id="target-section">
+    <div class="section-header"><h2>🎯 Target Plastic</h2><p>The conventional plastic you want to replace</p></div>
+    <div class="target-card">
+      <div class="target-info">
+        <h3 id="target-name"></h3>
+        <div id="target-uses" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px"></div>
+        <div class="target-props">
+          <div class="prop-item"><div class="prop-label">Glass Transition (Tg)</div><div class="prop-value" id="target-tg"></div></div>
+          <div class="prop-item"><div class="prop-label">Tensile Strength</div><div class="prop-value" id="target-tensile"></div></div>
+          <div class="prop-item"><div class="prop-label">Time to Biodegrade</div><div class="prop-value" id="target-biodeg" style="color:var(--accent-rose)"></div></div>
+          <div class="prop-item"><div class="prop-label">SMILES</div><div class="prop-value" id="target-smiles-text" style="font-size:11px;font-family:'JetBrains Mono',monospace;word-break:break-all"></div></div>
+        </div>
+        <p id="target-impact" style="margin-top:14px;padding:12px;background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.2);border-radius:8px;font-size:13px;color:var(--accent-rose)"></p>
+      </div>
+      <div class="target-molecule">
+        <img id="target-mol-img" alt="Target Molecule Structure" style="max-width:100%;max-height:100%">
+        <span class="mol-label">2D structure</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section id="results-section">
+    <div class="section-header"><h2>🌿 Biodegradable Alternatives</h2><p>AI-discovered replacements ranked by multi-objective reward</p></div>
+    <div class="results-grid" id="results-grid"></div>
+  </section>
+
+  <!-- Charts -->
+  <section id="charts-section">
+    <div class="section-header"><h2>📊 How Are These Better?</h2><p>Visual comparison to help you understand why these alternatives matter</p></div>
+    <div class="charts-grid">
+      <div class="chart-card"><h3>🕸️ Multi-Objective Score Radar</h3><p style="font-size:12px;color:var(--text-muted);margin:-10px 0 12px">Each axis shows how well a candidate scores. Larger area = better overall.</p><canvas id="radar-chart"></canvas></div>
+      <div class="chart-card"><h3>⏳ Time to Biodegrade</h3><p style="font-size:12px;color:var(--text-muted);margin:-10px 0 12px">Red = current plastic (capped at 120 months). Green = our alternatives.</p><canvas id="bar-chart"></canvas></div>
+      <div class="chart-card"><h3>🌍 Environmental Time Saved</h3><p style="font-size:12px;color:var(--text-muted);margin:-10px 0 12px">How many years of pollution the best alternative prevents.</p><canvas id="impact-chart"></canvas></div>
+      <div class="chart-card"><h3>💪 Mechanical Properties</h3><p style="font-size:12px;color:var(--text-muted);margin:-10px 0 12px">Tensile strength & glass transition — can the alternative do the same job?</p><canvas id="mech-chart"></canvas></div>
+    </div>
+  </section>
+
+  <!-- 3D Pipeline -->
+  <section class="pipeline-section" id="pipeline">
+    <div class="section-header"><h2>⚙️ Discovery Pipeline</h2><p>Hover over each phase to learn what happens at every step</p></div>
+    <div class="pipeline-track">
+      <div class="pipeline-step-wrapper">
+        <div class="pipeline-step">
+          <span class="step-icon">📊</span><span class="step-name">Data Prep</span><span class="step-num">Phase 1</span>
+          <div class="pipeline-tooltip"><h4>Phase 1 — Data Preparation</h4>Converts 8,922+ molecules (SMILES strings) into molecular graphs with 38-dim atom features and 7-dim bond features. Includes 752 real experimentally validated polymers from PolyInfo and PN2S databases, plus 126 curated expert-labeled molecules.</div>
+        </div><div class="pipeline-connector"></div>
+      </div>
+      <div class="pipeline-step-wrapper">
+        <div class="pipeline-step">
+          <span class="step-icon">🧬</span><span class="step-name">Surrogate<br>Training</span><span class="step-num">Phase 2</span>
+          <div class="pipeline-tooltip"><h4>Phase 2 — Surrogate Models</h4>Trains two neural "judge" models: S_bio (biodegradability predictor, MPNN) and S_mech (mechanical properties, Attentive MPNN). Real data gets 2× weight. Early stopping saves ~67% compute.</div>
+        </div><div class="pipeline-connector"></div>
+      </div>
+      <div class="pipeline-step-wrapper">
+        <div class="pipeline-step">
+          <span class="step-icon">🤖</span><span class="step-name">GFlowNet<br>Training</span><span class="step-num">Phase 3</span>
+          <div class="pipeline-tooltip"><h4>Phase 3 — GFlowNet Training</h4>Trains the Generative Flow Network (1.6M params) with Trajectory Balance loss. Learns to generate molecules proportional to a multi-objective reward = S_bio^0.35 × S_mech^0.50 × S_syn^0.15.</div>
+        </div><div class="pipeline-connector"></div>
+      </div>
+      <div class="pipeline-step-wrapper">
+        <div class="pipeline-step">
+          <span class="step-icon">🔬</span><span class="step-name">Generation</span><span class="step-num">Phase 4</span>
+          <div class="pipeline-tooltip"><h4>Phase 4 — Molecule Generation</h4>Generates 4,624 candidate molecules using the trained GFlowNet. Evaluates validity (100%), diversity (0.805), novelty (99.96%), and reward distribution. Blocks chemically impossible bonds (N-O, N-N, O-O).</div>
+        </div><div class="pipeline-connector"></div>
+      </div>
+      <div class="pipeline-step-wrapper">
+        <div class="pipeline-step">
+          <span class="step-icon">🔄</span><span class="step-name">Active<br>Learning</span><span class="step-num">Phase 5</span>
+          <div class="pipeline-tooltip"><h4>Phase 5 — Active Learning</h4>12 rounds of generate → simulate (UFF molecular dynamics) → retrain cycle. Each round refines the surrogates with newly discovered molecules, progressively improving prediction accuracy. Total: 12,000 generated, 960 MD-validated, 84.2% cumulative improvement.</div>
+        </div><div class="pipeline-connector"></div>
+      </div>
+      <div class="pipeline-step-wrapper">
+        <div class="pipeline-step">
+          <span class="step-icon">🌿</span><span class="step-name">Discovery</span><span class="step-num">Phase 6</span>
+          <div class="pipeline-tooltip"><h4>Phase 6 — Polymer Discovery</h4>Given a target plastic (e.g., PET), finds the best biodegradable alternatives. Filters by polymerizability, validates via MD simulation, ranks by mechanical match and biodegradation improvement.</div>
+        </div><div class="pipeline-connector"></div>
+      </div>
+      <div class="pipeline-step-wrapper">
+        <div class="pipeline-step" onclick="openGreenAI()" style="cursor:pointer;border-color:rgba(16,185,129,0.3)">
+          <span class="step-icon">🌍</span><span class="step-name">Green AI</span><span class="step-num">Phase 7 →</span>
+          <div class="pipeline-tooltip"><h4>Phase 7 — Green AI Report</h4>Tracks CO₂ emissions (~0.3 kg/run), energy usage, and water footprint. Generates a sustainability scorecard. <strong>Click to learn more!</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" style="margin:60px 0;text-align:center">
+    <div class="section-header">
+      <h2>🧪 How It Works</h2>
+      <p style="max-width:700px;margin:0 auto">This system uses <strong>Generative Flow Networks (GFlowNets)</strong> to search ~10<sup>60</sup> possible molecules for biodegradable polymer alternatives. The AI simultaneously optimizes <span style="color:var(--accent-green)">biodegradability</span>, <span style="color:var(--accent-blue)">mechanical strength</span>, and <span style="color:var(--accent-purple)">synthesizability</span> — trained on 752 real-world experiments + 8,922 total molecules. Every candidate is checked for <strong>polymerizability</strong> — can it actually be made into a real polymer? Top candidate (BP-001) degrades 918× faster than PET while maintaining 30.4 MPa tensile strength.</p>
+    </div>
+  </section>
+
+  <footer class="footer"><p>♻️ GFlowNet BioPoly Discovery — AI for Sustainable Materials | <a href="#" onclick="openGreenAI();return false" style="color:var(--accent-green);text-decoration:none">🌍 Green AI Certified</a></p></footer>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

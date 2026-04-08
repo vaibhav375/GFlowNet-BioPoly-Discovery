@@ -1,0 +1,113 @@
+# =============================================================================
+# GFlowNet BioPoly Discovery - Master Configuration
+# =============================================================================
+
+project:
+  name: "GFlowNet_BioPoly_Discovery"
+  seed: 42
+  device: "auto"  # auto, cpu, cuda, mps
+  output_dir: "./results"
+  checkpoint_dir: "./checkpoints"
+  carbon_log_dir: "./carbon_logs"
+
+# --- Data Configuration ---
+data:
+  raw_dir: "./data/raw"
+  processed_dir: "./data/processed"
+  # Atom vocabulary for polymer generation
+  atom_types: ["C", "N", "O", "S", "F", "Cl", "Br", "P"]
+  bond_types: ["SINGLE", "DOUBLE", "TRIPLE", "AROMATIC"]
+  max_atoms: 50
+  max_mol_weight: 800
+  # Feature dimensions
+  atom_feature_dim: 32
+  bond_feature_dim: 8
+  # Dataset splits
+  train_ratio: 0.8
+  val_ratio: 0.1
+  test_ratio: 0.1
+
+# --- Surrogate Model: S_bio (Biodegradability) ---
+surrogate_bio:
+  architecture: "MPNN"
+  hidden_dim: 128
+  num_layers: 4
+  dropout: 0.2
+  pooling: "global_mean"
+  output_dim: 1  # Biodegradability score [0, 1]
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  batch_size: 64
+  epochs: 100
+  patience: 15
+
+# --- Surrogate Model: S_mech (Mechanical Properties) ---
+surrogate_mech:
+  architecture: "MPNN"
+  hidden_dim: 128
+  num_layers: 4
+  dropout: 0.2
+  pooling: "global_mean"
+  output_dim: 3  # [tensile_strength, Tg, flexibility]
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  batch_size: 64
+  epochs: 100
+  patience: 15
+
+# --- GFlowNet Configuration ---
+gflownet:
+  # Policy network
+  policy_hidden_dim: 256
+  policy_num_layers: 5
+  policy_dropout: 0.1
+  # Training
+  learning_rate: 0.0005
+  batch_size: 32
+  num_episodes: 50000
+  trajectory_length: 50  # max steps per molecule
+  # Flow matching
+  loss_type: "trajectory_balance"  # flow_matching, trajectory_balance, detailed_balance
+  log_reward_min: -10.0
+  # Exploration
+  temperature: 1.0
+  temperature_decay: 0.999
+  min_temperature: 0.1
+  epsilon: 0.05  # random action probability
+  # Reward
+  reward_exponent: 2.0
+  reward_min: 1e-6
+
+# --- Reward Function Weights ---
+reward:
+  alpha_bio: 1.0    # Biodegradability weight
+  alpha_mech: 1.0   # Mechanical properties weight
+  alpha_syn: 1.0    # Synthesizability weight
+  combination: "multiplicative"  # multiplicative, additive
+  
+# --- Green AI Configuration ---
+green_ai:
+  track_carbon: true
+  carbon_budget_kg: 5.0  # Maximum allowed CO2 (kg)
+  mixed_precision: true
+  gradient_checkpointing: true
+  early_stopping_patience: 20
+  batch_size_optimization: true
+  log_interval: 10  # Log every N epochs
+  
+# --- Active Learning (HPC Loop) ---
+active_learning:
+  num_rounds: 10
+  candidates_per_round: 1000
+  top_k_for_simulation: 50
+  simulation_type: "md"  # md, dft, both
+  retrain_surrogates: true
+
+# --- Evaluation ---
+evaluation:
+  num_molecules_generate: 1000
+  top_k: 100
+  diversity_metric: "tanimoto"
+  validity_check: true
+  novelty_check: true
+  num_seeds: 3

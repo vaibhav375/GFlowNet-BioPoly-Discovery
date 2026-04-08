@@ -1,0 +1,534 @@
+{
+  "metadata": {
+    "timestamp": "2026-03-27T06:52:46.001810",
+    "pipeline_time_seconds": 77044.84564614296,
+    "pipeline_time_minutes": 1284.0807607690492,
+    "device": "cpu",
+    "co2_emissions_kg": 0.64268242083054
+  },
+  "configuration": {
+    "data": {
+      "dataset_size": 8000,
+      "train_ratio": 0.8,
+      "val_ratio": 0.1,
+      "test_ratio": 0.1,
+      "seed": 42,
+      "atom_feature_dim": 38,
+      "bond_feature_dim": 7,
+      "num_biodegradable_templates": 25,
+      "num_non_biodegradable_templates": 15,
+      "num_augmented_molecules": 50
+    },
+    "surrogate": {
+      "hidden_dim": 128,
+      "num_layers": 4,
+      "dropout": 0.2,
+      "epochs": 300,
+      "batch_size": 64,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "lr_patience": 8,
+      "lr_factor": 0.5,
+      "early_stopping_patience": 20,
+      "carbon_budget_kg": 2.0,
+      "grad_clip_norm": 1.0,
+      "max_train_samples": 3000,
+      "max_val_samples": 400
+    },
+    "gflownet": {
+      "policy_hidden_dim": 256,
+      "policy_num_layers": 5,
+      "policy_dropout": 0.1,
+      "max_atoms": 30,
+      "min_atoms": 10,
+      "training_steps": 8000,
+      "batch_size": 16,
+      "policy_lr": 0.0005,
+      "log_z_lr": 0.005,
+      "temperature_init": 2.0,
+      "temperature_decay": 0.9985,
+      "min_temperature": 0.5,
+      "epsilon_init": 0.2,
+      "epsilon_decay": 0.9995,
+      "min_epsilon": 0.02,
+      "alpha_bio": 1.5,
+      "alpha_mech": 1.0,
+      "alpha_syn": 0.8,
+      "reward_exponent": 1.2,
+      "reward_min": 1e-06,
+      "log_reward_min": -14.0,
+      "ester_bonus": 0.3,
+      "amide_bonus": 0.25,
+      "hydroxyl_bonus": 0.08,
+      "size_bonus_threshold": 8,
+      "size_bonus": 0.15,
+      "halogen_penalty": 0.8,
+      "max_shaping_bonus": 0.8,
+      "tb_lambda": 1.0,
+      "num_candidates": 5000,
+      "max_generation_attempts": 20000
+    },
+    "active_learning": {
+      "num_rounds": 12,
+      "candidates_per_round": 1000,
+      "top_k_for_simulation": 80,
+      "retrain_steps": 300,
+      "retrain_lr": 0.0003,
+      "retrain_batch_size": 8
+    },
+    "discovery": {
+      "num_candidates": 1000,
+      "top_k": 20,
+      "min_biodeg_improvement": 2.0,
+      "similarity_weight": 0.3,
+      "md_noise_level": 0.05
+    },
+    "device": "cpu",
+    "seed": 42,
+    "checkpoint_dir": "./checkpoints",
+    "results_dir": "./results",
+    "carbon_log_dir": "./carbon_logs",
+    "log_level": "INFO"
+  },
+  "dataset": {
+    "total_molecules": 8000,
+    "unique_molecules": 150,
+    "train": 6400,
+    "val": 800,
+    "test": 800,
+    "avg_biodegradability": 0.4980210533153077,
+    "high_biodeg_count": 3856,
+    "avg_tensile": 47.03714824047743,
+    "avg_tg": 18.483601208466776
+  },
+  "surrogate_models": {
+    "s_bio_best_val_loss": 0.004140669646273766,
+    "s_bio_epochs": 69,
+    "s_bio_params": 773761,
+    "s_mech_best_val_loss": 0.009310656892401832,
+    "s_mech_epochs": 73,
+    "s_syn_avg": 0.8704777777777777
+  },
+  "gflownet": {
+    "total_params": 1620968,
+    "training_steps": 8000,
+    "best_reward": 1.3526170289114319,
+    "final_temperature": 0.5,
+    "final_epsilon": 0.02,
+    "final_log_z": 1.0542757511138916,
+    "session6_advanced": true,
+    "ls_improvements": 153,
+    "ls_total": 240
+  },
+  "evaluation": {
+    "num_generated": 4624,
+    "num_valid": 4624,
+    "validity_rate": 1.0,
+    "uniqueness": 1.0,
+    "diversity": 0.8052094126551245,
+    "mean_reward": 0.5692881725319229,
+    "std_reward": 0.273979323402221,
+    "max_reward": 1.3795618677642418,
+    "top_10_reward": 1.3559573386988475,
+    "top_50_reward": 1.3107555117910976,
+    "top_100_reward": 1.2793573449927578,
+    "novelty": 0.9995674740484429,
+    "mean_s_bio": 0.4348363938232865,
+    "mean_s_mech": 0.5730006617425093,
+    "mean_s_syn": 0.8211906478277586
+  },
+  "active_learning": {
+    "rounds": 12,
+    "total_generated": 12000,
+    "total_simulated": 960,
+    "total_stable": 960,
+    "reward_improvement_pct": 84.23519760752143
+  },
+  "discovery": {
+    "target_polymer": "pet",
+    "num_generated": 1000,
+    "num_valid": 1000,
+    "num_stable": 60,
+    "num_final_candidates": 20,
+    "diversity": 0.684610530395442,
+    "avg_biodeg_improvement": 835.4756931609849,
+    "top_candidates": [
+      {
+        "rank": 1,
+        "smiles": "O=C(O)CC(O)CC(=O)OC(=O)O",
+        "name": "BioEster-Poly-001",
+        "reward": 1.3359444497557948,
+        "s_bio": 0.8116701245307922,
+        "s_mech": 0.7958580150604248,
+        "s_syn": 0.8061111111111111,
+        "is_stable": true,
+        "predicted_tg": 148.8,
+        "predicted_tensile": 30.4,
+        "predicted_flexibility": 0.611,
+        "predicted_biodeg_months": 4.9,
+        "similarity_to_target": 0.1388888888888889,
+        "mechanical_match_score": 0.7380535721778869,
+        "biodeg_improvement_factor": 918.3673469387754,
+        "application_category": "fast-degrading (single-use, agricultural)",
+        "strength_category": "moderate",
+        "biodeg_category": "fast",
+        "is_polymerizable": true,
+        "polymerizability_score": 1.0,
+        "polymerization_mechanisms": [
+          "condensation (self-polymerizing hydroxy acid)",
+          "condensation (with diol partner)",
+          "condensation (with diacid partner)",
+          "ring-opening polymerization (ROP)"
+        ],
+        "polymerizable_groups": [
+          "hydroxy_acid",
+          "diol",
+          "diacid",
+          "anhydride"
+        ]
+      },
+      {
+        "rank": 2,
+        "smiles": "O=C(O)CC(CC(=O)O)OC(=O)O",
+        "name": "BioEster-Poly-002",
+        "reward": 1.28890147013018,
+        "s_bio": 0.7760922908782959,
+        "s_mech": 0.7448920536041259,
+        "s_syn": 0.8705555555555555,
+        "is_stable": true,
+        "predicted_tg": 142.8,
+        "predicted_tensile": 29.9,
+        "predicted_flexibility": 0.768,
+        "predicted_biodeg_months": 5.0,
+        "similarity_to_target": 0.15625,
+        "mechanical_match_score": 0.7489637851715087,
+        "biodeg_improvement_factor": 900.0,
+        "application_category": "fast-degrading (single-use, agricultural)",
+        "strength_category": "moderate",
+        "biodeg_category": "fast",
+        "is_polymerizable": true,
+        "polymerizability_score": 1.0,
+        "polymerization_mechanisms": [
+          "condensation (self-polymerizing hydroxy acid)",
+          "condensation (with diol partner)",
+          "condensation (with diacid partner)"
+        ],
+        "polymerizable_groups": [
+          "hydroxy_acid",
+          "diol",
+          "diacid"
+        ]
+      },
+      {
+        "rank": 3,
+        "smiles": "O=C(O)OCC(O)COC(=O)O",
+        "name": "BioEster-Poly-003",
+        "reward": 1.2292324196908608,
+        "s_bio": 0.7248442769050598,
+        "s_mech": 0.7117851305007934,
+        "s_syn": 0.8755555555555555,
+        "is_stable": true,
+        "predicted_tg": 147.5,
+        "predicted_tensile": 30.9,
+        "predicted_flexibility": 0.668,
+        "predicted_biodeg_months": 5.0,
+        "similarity_to_target": 0.2,
+        "mechanical_match_score": 0.7998341143131256,
+        "biodeg_improvement_factor": 900.0,
+        "application_category": "fast-degrading (single-use, agricultural)",
+        "strength_category": "moderate",
+        "biodeg_category": "fast",
+        "is_polymerizable": true,
+        "polymerizability_score": 1.0,
+        "polymerization_mechanisms": [
+          "condensation (self-polymerizing hydroxy acid)",
+          "condensation (with diol partner)",
+          "condensation (with diacid partner)"
+        ],
+        "polymerizable_groups": [
+          "hydroxy_acid",
+          "diol",
+          "diacid"
+        ]
+      },
+      {
+        "rank": 4,
+        "smiles": "O=C(O)CC(O)COC(=O)O",
+        "name": "BioEster-Poly-004",
+        "reward": 1.2740596643051028,
+        "s_bio": 0.8148341178894043,
+        "s_mech": 0.6918741989135742,
+        "s_syn": 0.8138888888888889,
+        "is_stable": true,
+        "predicted_tg": 123.5,
+        "predicted_tensile": 28.8,
+        "predicted_flexibility": 0.717,
+        "predicted_biodeg_months": 5.2,
+        "similarity_to_target": 0.17647058823529413,
+        "mechanical_match_score": 0.8299981892108916,
+        "biodeg_improvement_factor": 865.3846153846154,
+        "application_category": "fast-degrading (single-use, agricultural)",
+        "strength_category": "moderate",
+        "biodeg_category": "fast",
+        "is_polymerizable": true,
+        "polymerizability_score": 1.0,
+        "polymerization_mechanisms": [
+          "condensation (self-polymerizing hydroxy acid)",
+          "condensation (with diol partner)",
+          "condensation (with diacid partner)"
+        ],
+        "polymerizable_groups": [
+          "hydroxy_acid",
+          "diol",
+          "diacid"
+        ]
+      },
+      {
+        "rank": 5,
+        "smiles": "O=C(O)CC(CO)OC(=O)O",
+        "name": "BioEster-Poly-005",
+        "reward": 1.27275774138851,
+        "s_bio": 0.8131696581840515,
+        "s_mech": 0.6918741989135742,
+        "s_syn": 0.8138888888888889,
+        "is_stable": true,
+        "predicted_tg": 122.6,
+        "predicted_tensile": 29.1,
+        "predicted_flexibility": 0.726,
+        "predicted_biodeg_months": 5.2,
+        "similarity_to_target": 0.17647058823529413,
+        "mechanical_match_score": 0.829998219013214,
+        "biodeg_improvement_factor": 865.3846153846154,
+        "application_category": "fast-degrading (single-use, agricultural)",
+        "strength_category": "moderate",
+        "biodeg_category": "fast",
+        "is_polymerizable": true,
+        "polymerizability_score": 1.0,
+        "polymerization_mechanisms": [
+          "condensation (self-polymerizing hydroxy acid)",
+          "condensation (with diol partner)",
+          "condensation (with diacid partner)"
+        ],
+        "polymerizable_groups": [
+          "hydroxy_acid",
+          "diol",
+          "diacid"
+        ]
+      },
+      {
+        "rank": 6,
+        "smiles": "O=C(O)OC(=O)CC(O)CO",
+        "name": "BioEster-Poly-006",
+        "reward": 1.261051226647979,
+        "s_bio": 0.7972584366798401,
+        "s_mech": 0.6903740096092223,
+        "s_syn": 0.8116666666666666,
+        "is_stable": true,
+        "predicted_tg": 127.0,
+        "predicted_tensile": 29.8,
+        "predicted_flexibility": 0.545,
+        "predicted_biodeg_months": 5.2,
+        "similarity_to_target": 0.17142857142857143,
+        "mechanical_match_score": 0.8310466349124908,
+        "biodeg_improvement_factor": 865.3846153846154,
+        "application_category": "fast-degrading (single-use, agricultural)",
+        "strength_category": "moderate",
+        "biodeg_category": "fast",
+        "is_polymerizable": true,
+        "polymerizability_score": 1.0,
+        "polymerization_mechanisms": [
+          "condensation (self-polymerizing hydroxy acid)",
+          "condensation (with diacid partner)",
+          "ring-opening polymerization (ROP)"
+        ],
+        "polymerizable_groups": [
+          "hydroxy_acid",
+          "diol",
+          "anhydride"
+        ]
+      },
+      {
+        "rank": 7,
+        "smiles": "O=C(O)CC(COC(=O)O)C(=O)O",
+        "name": "BioEster-Poly-007",
+        "reward": 1.3006100710476278,
+        "s_bio": 0.7712618708610535,
+        "s_mech": 0.7970820500850677,
+        "s_syn": 0.8061111111111111,
+        "is_stable": true,
+        "predicted_tg": 144.1,
+        "predicted_tensile": 30.0,
+        "predicted_flexibility": 0.77,
+        "predicted_biodeg_months": 5.3,
+        "similarity_to_target": 0.17142857142857143,
+        "mechanical_match_score": 0.7361174941062927,
+        "biodeg_improvement_factor": 849.0566037735849,
+        "application_category": "fast-degrading (single-use, agricultural)",
+        "strength_category": "moderate",
+        "biodeg_category": "fast",
+        "is_polymerizable": true,
+        "polymerizability_score": 1.0,
+        "polymerization_mechanisms": [
+          "condensation (self-polymerizing hydroxy acid)",
+          "condensation (with diol partner)",
+          "condensation (with diacid partner)"
+        ],
+        "polymerizable_groups": [
+          "hydroxy_acid",
+          "diol",
+          "diacid"
+        ]
+      },
+      {
+        "rank": 8,
+        "smiles": "O=C(O)OCCC(O)COC(=O)O",
+        "name": "BioEster-Poly-008",
+        "reward": 1.2062367292450755,
+        "s_bio": 0.71598881483078,
+        "s_mech": 0.7110881733894348,
+        "s_syn": 0.8061111111111111,
+        "is_stable": true,
+        "predicted_tg": 144.6,
+        "predicted_tensile": 31.0,
+        "predicted_flexibility": 0.778,
+        "predicted_biodeg_months": 5.2,
+        "similarity_to_target": 0.20588235294117646,
+        "mechanical_match_score": 0.7962158441543579,
+        "biodeg_improvement_factor": 865.3846153846154,
+        "application_category": "fast-degrading (single-use, agricultural)",
+        "strength_category": "moderate",
+        "biodeg_category": "fast",
+        "is_polymerizable": true,
+        "polymerizability_score": 1.0,
+        "polymerization_mechanisms": [
+          "condensation (self-polymerizing hydroxy acid)",
+          "condensation (with diol partner)",
+          "condensation (with diacid partner)"
+        ],
+        "polymerizable_groups": [
+          "hydroxy_acid",
+          "diol",
+          "diacid"
+        ]
+      },
+      {
+        "rank": 9,
+        "smiles": "O=C(O)OCC(CO)COC(=O)O",
+        "name": "BioEster-Poly-009",
+        "reward": 1.168952646213052,
+        "s_bio": 0.6658163070678711,
+        "s_mech": 0.6985527801513671,
+        "s_syn": 0.8683333333333334,
+        "is_stable": true,
+        "predicted_tg": 143.6,
+        "predicted_tensile": 30.8,
+        "predicted_flexibility": 0.772,
+        "predicted_biodeg_months": 5.2,
+        "similarity_to_target": 0.22580645161290322,
+        "mechanical_match_score": 0.8086679995059967,
+        "biodeg_improvement_factor": 865.3846153846154,
+        "application_category": "fast-degrading (single-use, agricultural)",
+        "strength_category": "moderate",
+        "biodeg_category": "fast",
+        "is_polymerizable": true,
+        "polymerizability_score": 1.0,
+        "polymerization_mechanisms": [
+          "condensation (self-polymerizing hydroxy acid)",
+          "condensation (with diol partner)",
+          "condensation (with diacid partner)"
+        ],
+        "polymerizable_groups": [
+          "hydroxy_acid",
+          "diol",
+          "diacid"
+        ]
+      },
+      {
+        "rank": 10,
+        "smiles": "O=C(O)CC(CC(=O)O)C(=O)O",
+        "name": "BioEster-Poly-010",
+        "reward": 1.1926179448437781,
+        "s_bio": 0.8011775016784668,
+        "s_mech": 0.7122179794311523,
+        "s_syn": 0.88,
+        "is_stable": true,
+        "predicted_tg": 118.4,
+        "predicted_tensile": 27.3,
+        "predicted_flexibility": 0.841,
+        "predicted_biodeg_months": 5.4,
+        "similarity_to_target": 0.13333333333333333,
+        "mechanical_match_score": 0.8019834578037262,
+        "biodeg_improvement_factor": 833.3333333333333,
+        "application_category": "fast-degrading (single-use, agricultural)",
+        "strength_category": "moderate",
+        "biodeg_category": "fast",
+        "is_polymerizable": true,
+        "polymerizability_score": 1.0,
+        "polymerization_mechanisms": [
+          "condensation (self-polymerizing hydroxy acid)",
+          "condensation (with diol partner)",
+          "condensation (with diacid partner)"
+        ],
+        "polymerizable_groups": [
+          "hydroxy_acid",
+          "diol",
+          "diacid"
+        ]
+      }
+    ]
+  },
+  "green_ai": {
+    "total_emissions_kg_co2": 0.64268242083054,
+    "energy_consumed_kwh": 1.5301962400727143,
+    "water_consumed_liters": 2.7543532321308857,
+    "embodied_carbon_kg": 0.08560538406001197,
+    "lifecycle_carbon_kg": 0.7282878048905519,
+    "training_time_hours": 21.401346012817488,
+    "emissions_per_molecule": 0.00013898841280937283,
+    "total_flops": 1244903424000.0,
+    "phase_breakdown": {
+      "data_preparation": {
+        "time_seconds": 1.74,
+        "time_pct": 0.0,
+        "energy_kwh": 3.5e-05,
+        "emissions_kg": 1.5e-05,
+        "water_liters": 0.0001
+      },
+      "surrogate_training": {
+        "time_seconds": 8661.09,
+        "time_pct": 11.2,
+        "energy_kwh": 0.172019,
+        "emissions_kg": 0.072248,
+        "water_liters": 0.3096
+      },
+      "gflownet_training": {
+        "time_seconds": 55179.87,
+        "time_pct": 71.6,
+        "energy_kwh": 1.095934,
+        "emissions_kg": 0.460292,
+        "water_liters": 1.9727
+      },
+      "evaluation": {
+        "time_seconds": 885.53,
+        "time_pct": 1.1,
+        "energy_kwh": 0.017588,
+        "emissions_kg": 0.007387,
+        "water_liters": 0.0317
+      },
+      "active_learning": {
+        "time_seconds": 12214.0,
+        "time_pct": 15.9,
+        "energy_kwh": 0.242584,
+        "emissions_kg": 0.101885,
+        "water_liters": 0.4367
+      },
+      "discovery": {
+        "time_seconds": 102.62,
+        "time_pct": 0.1,
+        "energy_kwh": 0.002038,
+        "emissions_kg": 0.000856,
+        "water_liters": 0.0037
+      }
+    }
+  }
+}
